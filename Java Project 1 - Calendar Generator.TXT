@@ -1,0 +1,169 @@
+/**Project Narrative
+A Java program to generate a calendar and shown it in the standard console.
+
+Input of the Program
+The program takes three input values from the user via keyboard. 
+1) Year. The user will enter a 4-digit year (e.g. 1986, 2005), which is guaranteed to be between 1980 and 2019. 
+2) Month. The user will enter a 1- or 2-digit month. For example, "5" means May and "11" means November. 
+3) Day of the 1st. The user will enter what day-of-week is the first day of that year that month. The user will enter 3 characters to represent
+   a day of week. For example, "Mon" means Monday and "Thu" means Thursday. This input value is not case-sensitive, which means that "Mon", "MON", and "mon" are all valid.
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+package project_1;
+
+import java.util.Scanner;
+
+public class CalendarGenerator {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Please enter the year (4-digit): ");
+        int year = scanner.nextInt();
+        System.out.print("Please enter the month (1 - 12): ");
+        int month = scanner.nextInt();
+        System.out.print("Please enter the day-of-week of the first day of the month (3-letter): ");
+        String dayOfWeek = scanner.next().toLowerCase();  // Convert to lowercase letters.
+        scanner.close();
+
+        /** Preparation of output */
+
+        final int WINDOW_SIZE = 27;
+
+        // Leap year
+        boolean isLeapYear;
+        if (year % 4 != 0) { isLeapYear = false; }
+        else if (year % 100 != 0) { isLeapYear = true; }
+        else if (year % 400 != 0) { isLeapYear = false; }
+        else { isLeapYear = true; }
+
+        // Number of days in the month
+        int numOfDays;
+        if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) { numOfDays = 31; }
+        else if (month == 4 || month == 6 || month == 9 || month == 11) { numOfDays = 30; }
+        else { numOfDays = isLeapYear ? 29 : 28; }
+
+        /** Output calendar. */
+
+        // First line
+        String firstLine = "";
+        if (month == 1) { firstLine += "January"; }
+        if (month == 2) { firstLine += "February"; }
+        if (month == 3) { firstLine += "March"; }
+        if (month == 4) { firstLine += "April"; }
+        if (month == 5) { firstLine += "May"; }
+        if (month == 6) { firstLine += "June"; }
+        if (month == 7) { firstLine += "July"; }
+        if (month == 8) { firstLine += "August"; }
+        if (month == 9) { firstLine += "September"; }
+        if (month == 10) { firstLine += "October"; }
+        if (month == 11) { firstLine += "November"; }
+        if (month == 12) { firstLine += "December"; }
+        firstLine += ' ' + String.valueOf(year);
+        int numOfSpaces = (WINDOW_SIZE - firstLine.length()) / 2;
+        for (int i = 0; i < numOfSpaces; i++) { firstLine = " " + firstLine; }
+        System.out.println(firstLine);
+
+        // Second line
+        System.out.println("Sun Mon Tue Wed Thu Fri Sat");
+
+        // All the days
+        int remainder, blanks;
+        if (dayOfWeek.equals("sun")) { remainder = blanks = 0; }
+        else if (dayOfWeek.equals("mon")) { remainder = 6; blanks = 1; }
+        else if (dayOfWeek.equals("tue")) { remainder = 5; blanks = 2; }
+        else if (dayOfWeek.equals("wed")) { remainder = 4; blanks = 3; }
+        else if (dayOfWeek.equals("thu")) { remainder = 3; blanks = 4; }
+        else if (dayOfWeek.equals("fri")) { remainder = 2; blanks = 5; }
+        else { remainder = 1; blanks = 6; }
+        for (int i = 0; i < blanks; i++) { System.out.print("    "); }
+        for (int i = 1; i <= numOfDays; i++) {
+            if (i < 10) { System.out.print("  " + i); }
+            else { System.out.print(" " + i); }
+            if (i != numOfDays) {
+                if (i % 7 == remainder) { System.out.println(); }
+                else { System.out.print(' '); }
+            } else { System.out.println(); }
+        }
+    }
+}
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+REVISED CODE
+
+
+package project_1;
+
+import java.util.Scanner;
+
+public class CalendarGenerator {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Please enter the year (4-digit): ");
+        int year = scanner.nextInt();
+        System.out.print("Please enter the month (1 - 12): ");
+        int month = scanner.nextInt();
+        System.out.print("Please enter the day-of-week of the first day of the month (3-letter): ");
+        String dayOfWeek = scanner.next().toLowerCase();  // Convert to lowercase letters.
+        scanner.close();
+
+        /** Preparation of output */
+
+        final int WINDOW_SIZE = 27;
+
+        // Leap year
+        boolean isLeapYear;
+        if (year % 4 != 0) { isLeapYear = false; }
+        else if (year % 100 != 0) { isLeapYear = true; }
+        else if (year % 400 != 0) { isLeapYear = false; }
+        else { isLeapYear = true; }
+
+        // Number of days in the month
+        int numOfDays;
+        if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) { numOfDays = 31; }
+        else if (month == 4 || month == 6 || month == 9 || month == 11) { numOfDays = 30; }
+        else { numOfDays = isLeapYear ? 29 : 28; }
+
+        /** Output calendar. */
+
+        // First line
+        String firstLine = "";
+        if (month == 1) { firstLine += "January"; }
+        if (month == 2) { firstLine += "February"; }
+        if (month == 3) { firstLine += "March"; }
+        if (month == 4) { firstLine += "April"; }
+        if (month == 5) { firstLine += "May"; }
+        if (month == 6) { firstLine += "June"; }
+        if (month == 7) { firstLine += "July"; }
+        if (month == 8) { firstLine += "August"; }
+        if (month == 9) { firstLine += "September"; }
+        if (month == 10) { firstLine += "October"; }
+        if (month == 11) { firstLine += "November"; }
+        if (month == 12) { firstLine += "December"; }
+        firstLine += ' ' + String.valueOf(year);
+        int numOfSpaces = (WINDOW_SIZE - firstLine.length()) / 2;
+        for (int i = 0; i < numOfSpaces; i++) { firstLine = " " + firstLine; }
+        System.out.println(firstLine);
+
+        // Second line
+        System.out.println("Sun Mon Tue Wed Thu Fri Sat");
+
+        // All the days
+        int remainder, blanks;
+        if (dayOfWeek.equals("sun")) { remainder = blanks = 0; }
+        else if (dayOfWeek.equals("mon")) { remainder = 6; blanks = 1; }
+        else if (dayOfWeek.equals("tue")) { remainder = 5; blanks = 2; }
+        else if (dayOfWeek.equals("wed")) { remainder = 4; blanks = 3; }
+        else if (dayOfWeek.equals("thu")) { remainder = 3; blanks = 4; }
+        else if (dayOfWeek.equals("fri")) { remainder = 2; blanks = 5; }
+        else { remainder = 1; blanks = 6; }
+        for (int i = 0; i < blanks; i++) { System.out.print("    "); }
+        for (int i = 1; i <= numOfDays; i++) {
+            if (i < 10) { System.out.print("  " + i); }
+            else { System.out.print(" " + i); }
+            if (i != numOfDays) {
+                if (i % 7 == remainder) { System.out.println(); }
+                else { System.out.print(' '); }
+            } else { System.out.println(); }
+        }
+    }
+} 
