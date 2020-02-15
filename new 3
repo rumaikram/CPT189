@@ -1,0 +1,61 @@
+//Project Narrtaive
+In this project, simple data processing is being done. The input file for the program is in the form of x-y pairs, with all values in floating-point.
+The program will read all of the data from the input file and calculate the mean and standard deviation of each variable, and the correlation coefficient, 
+
+
+
+
+
+package project_2;
+
+public class MainProgram {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		package com.coursework.project2;
+		import sun.rmi.runtime.NewThreadAction;
+		import java.io.FileInputStream;
+		import java.io.FileNotFoundException;
+		import java.io.IOException;
+		import java.util.ArrayList;
+		import java.util.Scanner;
+		public class Program {
+		   //Method for sum
+		   public static Double sum(ArrayList<Double> pairs) {
+		       Double sum = 0.0;
+		       for (int i = 0; i < pairs.size(); i++) {
+		           sum = sum + pairs.get(i);
+		       }
+		       return (sum);
+		   }
+		   //Method for Standard dev
+		   public static Double stdDev(ArrayList<Double> pairs) {
+		       Double sd = 0.0;
+		       for (int i = 0; i < pairs.size(); i++) {
+		           sd += ((pairs.get(i) - sum(pairs) / pairs.size()) * (pairs.get(i) - sum(pairs) / pairs.size())) / (pairs.size() - 1);
+		       }
+		       return Math.sqrt(sd);
+		   }
+		   public static void main(String[] args) throws IOException {
+		       FileInputStream fileInputStream = new FileInputStream("C:\\Users\\kellog1\\eclipse-workspace\\CPT 189 Java\\Project2\\input.txt");
+		       Scanner sc = new Scanner(fileInputStream);
+		       // creating 2 parallel Array lists for x and y
+		       ArrayList<Double> x_pairs = new ArrayList<Double>();
+		       ArrayList<Double> y_pairs = new ArrayList<Double>();
+		       while (sc.hasNext()) {
+		           Double p1 = sc.nextDouble();
+		           Double p2 = sc.nextDouble();
+		           x_pairs.add(p1);
+		           y_pairs.add(p2);
+		       }
+		       System.out.println(sum(x_pairs) / x_pairs.size());
+		       System.out.println(sum(y_pairs) / y_pairs.size());
+		       System.out.println(stdDev(x_pairs));
+		       System.out.println(stdDev(y_pairs));
+		       sc.close();
+		       fileInputStream.close();
+		   }
+		}
+	}
+
+}
