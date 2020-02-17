@@ -1,0 +1,235 @@
+package infix_parser;
+import java.io.FileInputStream;
+import java.util.Scanner;
+import java.util.Stack; 
+
+public class Infix_Evaluate {
+
+    public static void main(String[] args) throws Exception {
+        FileInputStream inputFile = new FileInputStream("C:\\Users\\kellog1\\Downloads\\polynomial-calculator-master\\InFixEvaluator\\src\\InFixEvaluator\\input.txt");
+        Scanner scnr = new Scanner(inputFile);
+        while (scnr.hasNextLine()) {
+           try {
+               String exp = scnr.nextLine();
+               String s = parseExpression(exp);
+               String[] expArray = s.split(" ");
+               String[] postfixArray = infixToPostfix(expArray).split(" ");
+               int finalEval = postfixEval(postfixArray);
+               System.out.println(finalEval);
+           } catch (ArithmeticException e) {
+               System.out.println(e.getMessage());
+           }
+
+        }
+        inputFile.close();
+        scnr.close();
+    }
+
+    //Method to parse the string from the input file
+    private static String parseExpression(String exp) {
+        String cleanExp = exp.replaceAll("\\s+", "");//  remove all whitespaces in the exp
+        String s = ""; 
+        for (int i = 0; i < cleanExp.length(); i++) {
+            char c = cleanExp.charAt(i); // for each char in the string
+            if ((Character.isDigit(cleanExp.charAt(0)) || cleanExp.charAt(0) == '(') && i == 0) {  // if first char is a digit or '(', add to string s (w/o space)
+                s += c;
+            } else if (Character.isDigit(cleanExp.charAt(i)) && Character.isDigit(cleanExp.charAt(i - 1))) { // if char is a digit and the prev char is also a digit, add to string s (w/o space)
+                s += c;
+            } else if (Character.isDigit(cleanExp.charAt(i)) && cleanExp.charAt(i - 1) == '(') { // if char is a digit and the prev char is '(', prepend " " to string s (w space)
+                s += " " + c;
+            } else if ((c == '>' || c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == '%' || c == '<' || c == '&' || c == '|' || c == '=') && (Character.isDigit(cleanExp.charAt(i - 1)) || cleanExp.charAt(i - 1) == ')')) {
+                s += " " + c; // if char is a operator and the prev char is a digit or prev char is ')' then prepend " " to string s
+            } else if ((cleanExp.charAt(i - 1) == '>' || cleanExp.charAt(i - 1) == '&' || cleanExp.charAt(i - 1) == '|' || cleanExp.charAt(i - 1) == '=') && !Character.isDigit(c)) {
+                s += c; // if char is not a digit and the prev char is a '>' or '&' or '|' or '='  then add to string s (w/o space)
+            } else if ((cleanExp.charAt(i - 1) == '>' || cleanExp.charAt(i - 1) == '&' || cleanExp.charAt(i - 1) == '|' || cleanExp.charAt(i - 1) == '=') && Character.isDigit(c)) {
+                s += " " + c; // if char is a digit and the prev char is a '>' or '&' or '|' or '=' then prepend " " to string s (w space)
+            } else if (Character.isDigit(c) && !Character.isDigit(cleanExp.charAt(i - 1))) {
+                s += " " + c; // if char is a digit and the prev char is not a digit, then prepend to string s (w space)
+            } else if (cleanExp.charAt(i) == ')') {
+                s += " " + c; // if char is a ')' then prepend to string s (w space)
+            } else if (cleanExp.charAt(i - 1) == ')' && cleanExp.charAt(i) == '&') {
+                s += " " + c; // if prev char is a ')' AND char is '&' then prepend to string s (w space)
+            } else if (cleanExp.charAt(i) == '(' && !Character.isDigit(cleanExp.charAt(i - 1))) {
+                s += " " + c; // if prev char is a not a digit AND char is '(' then prepend to string s (w space)
+            } else { // else space char space
+                s += " " + c + " ";
+            }
+        }
+        return s;
+    }
+
+    public static String infixToPostfix(String[] infix) throws Exception {
+      
+        Stack<String> S = new Stack<String>();
+        String postfix = "";
+        for (int i = 0; i < infix.length; i++) {
+            if (infix[i].charAt(0) >= 48 && infix[i].charAt(0) <= 57) {
+                postfix += infix[i] + ' ';
+            } else if (infix[i].equals("(")) {
+                S.push(infix[i]);
+            } else if (infix[i].equals("+") || infix[i].equals("-") || infix[i].equals("*") || infix[i].equals("/") || infix[i].equals("%") ||
+                    infix[i].equals("==") || infix[i].equals("&&") || infix[i].equals("<=")
+                    || infix[i].equals(">=") || infix[i].equals("^") || infix[i].equals("||") || infix[i].equals(">") || infix[i].equals("<")) {
+
+                while (!S.empty() && !S.peek().equals("(") && prec(infix[i].charAt(0)) <= prec(S.peek().charAt(0))) {
+                    postfix += S.pop() + ' ';
+                }
+                S.push(infix[i]);
+            } else {
+                while (!S.peek().equals("(")) {
+                    postfix += S.pop() + ' ';
+                }
+                S.pop();
+            }
+        }
+        while (!S.empty()) {
+            postfix += S.pop() + ' ';
+        }
+        return postfix.substring(0, postfix.length() - 1);
+    }
+
+    //Checking the precedence, starting from low to high (1 being the lowest order and 7 being the highest)
+    static int prec(char ch) {
+        switch (ch) {
+            case '|':
+                return 1;
+            case '&':
+                return 2;
+            case '=':
+            case '!':
+                return 3;
+            case '<':
+            case '>':
+            case 'g':
+            case 'l':
+                return 4;
+            case '+':
+            case '-':
+                return 5;
+            case '*':
+            case '/':
+            case '%':
+                return 6;
+            case '^':
+                return 7;
+		default:
+			break;
+        }
+        return -1;
+    }
+
+    public static int postfixEval(String[] postfix) throws Exception {
+		Stack<Integer> S = new Stack<>();
+        for (int i = 0; i < postfix.length; i++) {
+            if (postfix[i].charAt(0) >= 48 &&
+                    postfix[i].charAt(0) <= 57) {
+                S.push(Integer.parseInt(postfix[i]));
+            } else {
+                int right = S.pop(), left = S.pop();
+                if (postfix[i].equals("+")) {
+                    S.push(left + right);
+                }
+                if (postfix[i].equals("-")) {
+                    S.push(left - right);
+                }
+                if (postfix[i].equals("*")) {
+                    S.push(left * right);
+                }
+                if (postfix[i].equals("%")) {
+                    S.push(left % right);
+                }
+                if (postfix[i].equals("^")) {
+                    S.push((int) Math.pow(left, right));
+                }
+                if (postfix[i].equals("/")) {
+                    if (right == 0)
+                        throw new ArithmeticException("Cannot divide by zero");
+                    else
+                        S.push(left / right);
+                }
+                if (postfix[i].equals(">")) {
+                    S.push(convertG(left, right));
+                }
+                if (postfix[i].equals("<")) {
+                    S.push(convertL(left, right));
+                }
+                if (postfix[i].equals(">=")) {
+                    S.push(convertGt(left, right));
+                }
+                if (postfix[i].equals("&&")) {
+                    S.push(convertLa(left, right));
+                }
+                if (postfix[i].equals("<=")) {
+                    S.push(convertLt(left, right));
+                }
+                if (postfix[i].equals("||")) {
+                    S.push(convertLo(left, right));
+                }
+                if (postfix[i].equals("!=")) {
+                    S.push(convertNe(left, right));
+                }
+                if (postfix[i].equals("==")) {
+                    S.push(convertEe(left, right));
+                }
+            }
+        }
+
+        return S.pop();
+    }
+
+    //Method to evaluate for >= operator
+    public static int convertGt(int left, int right) {
+        if (left >= right) return 1;
+        else return 0;
+    }
+
+    //Method to evaluate for logical AND (&&) operator
+    public static int convertLa(int left, int right) {
+        if (left == 1 && right == 0) return 0;
+        else if (left == 1 && right == 1) return 1;
+        else if (left == 0 && right == 0) return 0;
+        else if (left == 0 && right == 1) return 0;
+        else return 0;
+    }
+
+    //Method to evaluate for <= operator
+    public static int convertLt(int left, int right) {
+        if (left <= right) return 1;
+        else return 0;
+    }
+
+    //Method to evaluate for != operator
+    public static int convertNe(int left, int right) {
+        if (left != right) return 1;
+        else return 0;
+    }
+
+    //Method to evaluate for > operator
+    public static int convertG(int left, int right) {
+        if (left > right) return 1;
+        else return 0;
+    }
+
+    //Method to evaluate for < operator
+    public static int convertL(int left, int right) {
+        if (left < right) return 1;
+        else return 0;
+    }
+
+    //Method to evaluate for == operator
+    public static int convertEe(int left, int right) {
+        if (left == right) return 1;
+        else return 0;
+    }
+
+    //Method to evaluate for logical OR (||) operator
+    public static int convertLo(int left, int right) {
+        if (left == 1 || right == 0) return 1;
+        else if (left == 1 || right == 1) return 1;
+        else if (left == 0 || right == 0) return 0;
+        else if (left == 0 || right == 1) return 1;
+        else return 0;
+    }
+
+ 
+}
