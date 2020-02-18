@@ -1,10 +1,11 @@
 //Project Narrtaive
-In this project, simple data processing is being done. The input file for the program is in the form of x-y pairs, with all values in floating-point.
-The program will read all of the data from the input file and calculate the mean and standard deviation of each variable, and the correlation coefficient, 
+In this project, simple data processing is being done. The input file for the program is in the form of x-y pairs, with all values in 
+floating-point. The program will read all of the data from the input file and calculate the mean and standard deviation of each 
+variable, and the correlation coefficient
 
 
 
-
+---------------------------------------------------------------------------------------------------------------------------------------
 
 package project_2;
 
